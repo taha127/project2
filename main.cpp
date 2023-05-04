@@ -16,7 +16,12 @@ private:
   
   //...
 };
-
+ContactNode::ContactNode(const std::string& name, const std::string& email,
+          const std::string& phone){
+              this -> name = name;
+              this -> email = email;
+              this -> phone = phone;
+          }
 class ContactsList {
 private:
     ContactNode* head;
