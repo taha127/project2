@@ -21,6 +21,9 @@ private:
     void setPhone(const std::string& newPhone){
       phone = newPhone;
     }
+    void setNext(ContactNode* newNext){
+      next = newNext;
+    }
     std::string getName(){
       return name;
     }
@@ -29,6 +32,9 @@ private:
     }
     std::string getPhone(){
       return phone;
+    }
+    ContactNode* getNext(){
+      return next;
     }
 };
 //constructor function for ContactNode
