@@ -12,16 +12,33 @@ private:
     ContactNode(const std::string& name, const std::string& email,
              const std::string& phone);
   // getters and setters
-  //...
-  
-  //...
+    void setName(const std::string& newName){
+      name = newName;
+    }
+    void setEmail(const std::string& newEmail){
+      email = newEmail;
+    }
+    void setPhone(const std::string& newPhone){
+      phone = newPhone;
+    }
+    std::string getName(){
+      return name;
+    }
+    std::string getEmail(){
+      return email;
+    }
+    std::string getPhone(){
+      return phone;
+    }
 };
+//constructor function for ContactNode
 ContactNode::ContactNode(const std::string& name, const std::string& email,
           const std::string& phone){
               this -> name = name;
               this -> email = email;
               this -> phone = phone;
           }
+
 class ContactsList {
 private:
     ContactNode* head;
