@@ -92,7 +92,13 @@ ContactsList::ContactsList(){
   title = 0;
 }
 ContactsList::ContactsList(const ContactsList& other){
-
+  head = 0;
+  title = 0;
+  ContactNode * temp = other.head;
+  while(temp){
+    push_back(temp -> getName(), temp -> getEmail(), temp -> getPhone());
+    temp = temp -> getNext();
+  } 
 }
 // Destructor for Contactslist
 ContactsList::~ContactsList(){
@@ -127,15 +133,15 @@ void ContactsList::push_back(const std::string& name, const std::string& email,
             title -> setNext(temp);
             title = temp;
           }
-  /*void ContactsList::print(){
-    ContactNode * temp = head;
-    while(temp){
-      std::cout << temp -> getName() << std::endl;
-      std::cout << temp -> getEmail() << std::endl;
-      std::cout << temp -> getPhone() << std::endl;
-      std::cout<< "--------------------------------------------------\n";
-      temp = temp -> getNext();
-    }
+/*void ContactsList::print(){
+  ContactNode * temp = head;
+  while(temp){
+    std::cout << temp -> getName() << std::endl;
+    std::cout << temp -> getEmail() << std::endl;
+    std::cout << temp -> getPhone() << std::endl;
+    std::cout<< "--------------------------------------------------\n";
+    temp = temp -> getNext();
+  }
   }*/
 // main function to use all the methods
 int main();
