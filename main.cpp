@@ -49,7 +49,7 @@ class ContactsList {
 private:
     ContactNode* head;
     ContactNode *title;
-
+    int size;
 public:
     
     ContactsList();
@@ -64,8 +64,8 @@ public:
     ContactsList& operator=(const ContactsList& other); // Replace operator
     ContactsList operator+(const ContactsList& other);  // Concatenation operator
     ContactsList operator-(const ContactsList other);    // Subtraction operator
-    bool operator==(const ContactsList& other);         // Equality operator
     ContactNode& operator[](int index);                 // Subscript operator
+    bool operator==(const ContactsList& other);         // Equality operator
 
     // Insertion method
     void addContact(const std::string& name, const std::string& email,
@@ -90,10 +90,12 @@ public:
 ContactsList::ContactsList(){
   head = 0;
   title = 0;
+  size = 0;
 }
 ContactsList::ContactsList(const ContactsList& other){
   head = 0;
   title = 0;
+  size = 0;
   ContactNode * temp = other.head;
   while(temp){
     push_back(temp -> getName(), temp -> getEmail(), temp -> getPhone());
@@ -117,6 +119,7 @@ void ContactsList::push_front(const std::string& name, const std::string& email,
             temp -> setPhone(phone);
             temp -> setNext(head);
             head = temp;
+            size++;
             if(title == 0) title = head;
           }
 void ContactsList::push_back(const std::string& name, const std::string& email,
@@ -132,9 +135,48 @@ void ContactsList::push_back(const std::string& name, const std::string& email,
             temp -> setNext(0);
             title -> setNext(temp);
             title = temp;
+            size++;
           }
+//operators
+ContactsList& ContactsList::operator=(const ContactsList& other){
+  this -> ~ContactsList();
+  ContactNode * temp = other.head;
+  while(temp){
+    this -> push_back(temp -> getName(), temp -> getEmail(), temp -> getPhone());
+    temp = temp -> getNext();
+  }
+  return *this;
+}
+ContactNode& ContactsList::operator[](int index){
+  ContactNode * temp = head; 
+  while(index){
+    temp = temp -> getNext();
+    index --;
+  }
+  return *temp;
+}
+bool ContactsList::operator==(const ContactsList& other){
+  ContactNode * temp = other.head;
+  ContactNode * self = this -> head;
+  if(this->size != other.size) return false;
+  bool answer = false;
+  while(temp){
+    while(self){
+      if(temp->getName() == self->getName() && temp->getEmail() == self->getEmail() && temp->getPhone() == self->getPhone())
+      {
+        answer = true;
+        break;
+      }
+      answer = false;
+      self = self->getNext();
+    }
+    temp = temp->getNext();
+  }
+  return answer;
+}
 /*void ContactsList::print(){
   ContactNode * temp = head;
+  std::cout << size << std::endl << std::endl;
   while(temp){
     std::cout << temp -> getName() << std::endl;
     std::cout << temp -> getEmail() << std::endl;
@@ -142,6 +184,20 @@ void ContactsList::push_back(const std::string& name, const std::string& email,
     std::cout<< "--------------------------------------------------\n";
     temp = temp -> getNext();
   }
-  }*/
+}*/
 // main function to use all the methods
-int main();
+int main();/*{
+  ContactsList x, z;
+  x.push_back("taha", "gmail", "7759");
+  x.push_back("ali", "email", "74573");
+  x.push_back("hamed", "yaho", "35465");
+  x.print();
+  z = x;
+  std::cout << "=====================================\n";
+  z.print();
+  //std::cout << x[0].getNext()<< std::endl;
+  std::cout << "=====================================\n";
+  //z.push_front("taha", "googel", "879");
+  if(z == x) std::cout << "yes\n";
+  else std::cout << "no\n";
+}*/
