@@ -38,8 +38,8 @@ private:
     }
 };
 //constructor function for ContactNode
-ContactNode::ContactNode(const std::string& name, const std::string& email,
-          const std::string& phone){
+ContactNode::ContactNode(const std::string& name = "", const std::string& email = "",
+          const std::string& phone = ""){
               this -> name = name;
               this -> email = email;
               this -> phone = phone;
@@ -48,13 +48,16 @@ ContactNode::ContactNode(const std::string& name, const std::string& email,
 class ContactsList {
 private:
     ContactNode* head;
+    ContactNode *title;
 
 public:
     
     ContactsList();
+    void push_back(const std::string& name, const std::string& email,
+              const std::string& phone);
+    void push_front(const std::string& name, const std::string& email,
+              const std::string& phone);
     ContactsList(const ContactsList& other);
-
-    
     ~ContactsList();
 
     // Operators
@@ -86,6 +89,7 @@ public:
 // Constructors for Contactslist
 ContactsList::ContactsList(){
   head = 0;
+  title = 0;
 }
 ContactsList::ContactsList(const ContactsList& other){
 
@@ -99,5 +103,39 @@ ContactsList::~ContactsList(){
     temp = head;
   }
 }
+void ContactsList::push_front(const std::string& name, const std::string& email,
+          const std::string& phone){
+            ContactNode * temp = new ContactNode;
+            temp -> setName(name);
+            temp -> setEmail(email);
+            temp -> setPhone(phone);
+            temp -> setNext(head);
+            head = temp;
+            if(title == 0) title = head;
+          }
+void ContactsList::push_back(const std::string& name, const std::string& email,
+          const std::string& phone){
+            if(head == 0){
+              push_front(name, email, phone);
+              return;
+            }
+            ContactNode* temp = new ContactNode;
+            temp -> setName(name);
+            temp -> setEmail(email);
+            temp -> setPhone(phone);
+            temp -> setNext(0);
+            title -> setNext(temp);
+            title = temp;
+          }
+  /*void ContactsList::print(){
+    ContactNode * temp = head;
+    while(temp){
+      std::cout << temp -> getName() << std::endl;
+      std::cout << temp -> getEmail() << std::endl;
+      std::cout << temp -> getPhone() << std::endl;
+      std::cout<< "--------------------------------------------------\n";
+      temp = temp -> getNext();
+    }
+  }*/
 // main function to use all the methods
 int main();
