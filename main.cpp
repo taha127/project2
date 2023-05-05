@@ -50,11 +50,11 @@ private:
     ContactNode* head;
 
 public:
-    // Constructors
+    
     ContactsList();
     ContactsList(const ContactsList& other);
 
-    // Destructor
+    
     ~ContactsList();
 
     // Operators
@@ -83,6 +83,21 @@ public:
     void editContact(const std::string& name, const std::string& newEmail,
                      const std::string& newPhone); // Edits the contact with matching name
 };
+// Constructors for Contactslist
+ContactsList::ContactsList(){
+  head = 0;
+}
+ContactsList::ContactsList(const ContactsList& other){
 
+}
+// Destructor for Contactslist
+ContactsList::~ContactsList(){
+  ContactNode* temp = head;
+  while(head){
+    head = head -> getNext();
+    delete temp;
+    temp = head;
+  }
+}
 // main function to use all the methods
 int main();
