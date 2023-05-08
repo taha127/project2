@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <windows.h>
+#include <map>
 class ContactNode {
 private:
     std::string name;
@@ -106,6 +107,7 @@ ContactsList::ContactsList(const ContactsList& other){
 // Destructor for Contactslist
 ContactsList::~ContactsList(){
     ContactNode* temp = head;
+    size = 0;
     while(head){
         head = head->getNext();
         delete temp;
@@ -143,7 +145,7 @@ ContactsList& ContactsList::operator=(const ContactsList& other){
     this->~ContactsList();
     ContactNode * temp = other.head;
     while(temp){
-        push_back(temp->getName(), temp->getEmail(), temp->getPhone());
+        this->push_back(temp->getName(), temp->getEmail(), temp->getPhone());
         temp = temp->getNext();
     }
     return *this;
@@ -273,6 +275,9 @@ ContactNode* ContactsList::searchByName(const std::string& name){// Returns the 
         if(name == (*this)[i].getName())
             return &(*this)[i];
     }
+    system("cls");
+    //std::cin.ignore();
+    std::cout << "Such a name is not in the contact list!\n";
     return 0;
 }    
 ContactNode* ContactsList::searchByEmail(const std::string& email){// Returns the node with matching email
@@ -280,6 +285,9 @@ ContactNode* ContactsList::searchByEmail(const std::string& email){// Returns th
         if(email == (*this)[i].getEmail())
             return &(*this)[i];
     }
+    system("cls");
+    //std::cin.ignore();
+    std::cout << "Such a email is not in the contact list!\n";
     return 0;   
 }
 ContactNode* ContactsList::searchByPhone(const std::string& phone){// Returns the node with matching phone
@@ -287,6 +295,9 @@ ContactNode* ContactsList::searchByPhone(const std::string& phone){// Returns th
         if(phone == (*this)[i].getPhone())
             return &(*this)[i];
     }
+    system("cls");
+    //std::cin.ignore();
+    std::cout << "Such a phone is not in the contact list!\n";
     return 0;   
 }
 void ContactsList::editContact(const std::string& name, const std::string& newEmail,
@@ -312,22 +323,234 @@ void ContactsList::print(){
         std::cout <<"||\n";
         std::cout << "||###########################################||\n";
     }
+    std::cout << "Press enter to continue.\n";
+    getchar();
+    system("cls");
 }
 
-int main(){
-    ContactsList x, z, y;
-    x.addContact("taha", "tahadehghani127@gmail.com", "35292764");
-    x.addContact("ali", "email", "74573");
-    x.addContact("ali", "gmail", "7498495");
-    x.addContact("hamed", "yaho", "35465");
-    x.addContact("hamed", "apple", "3155");
-    x.addContact("ali", "you tube", "3784");
+void getCommandForList(ContactsList&, bool&, std::map<std::string, ContactsList>&);
+void exist(bool&);
 
-    z.addContact("ali", "email", "74573");
-    z.addContact("javad", "apple", "3155");
-    bool t = x == x;
-    std::cout << t << std::endl;
-    t = x == z;
-    std::cout << t << std::endl;
-    
+int main(){
+    std::vector<ContactsList> booklet(1);
+    std::map<std::string, ContactsList> nameList;
+    bool continuation = true;
+    while(continuation){
+        system("cls");
+        std::string order1;
+        std::cout << "Main menu guide :\n"; 
+        std::cout <<"Creat a new list of contacts : cl  #  Select contact list : sc  #  exist : ex\n";
+        std::cin >> order1;
+        if(order1 == "cl"){
+            ContactsList new_list;
+            std::string name, order2;
+            std::cin.ignore();
+            std::cout << "Enter the name of the created contact list : ";
+            std::getline(std::cin, name);
+            system("cls");
+            getCommandForList(new_list, continuation, nameList);
+            nameList[name] = new_list;
+        }
+        else if(order1 == "sc"){
+            std::string name_desired;
+            std::cout << "Enter the name of the desired contact list : ";
+            std::cin.ignore();
+            std::getline(std::cin, name_desired);
+            auto it = nameList.find(name_desired);
+            if(it != nameList.end()){
+                getCommandForList(it->second, continuation, nameList);
+            }
+            else{
+                std::cout << "Name not found\n";
+            }
+        }
+        else if(order1 == "ex")
+            exist(continuation);
+        else std::cout << "The desired command was not found\n";
+    }
+        
+        
+}
+std::string get_str(const char type){
+    std::string str;
+    if(type == 'n')
+        str = "name : ";
+    else if(type == 'e')
+        str = "email : ";
+    else str = "phone : ";
+    std::cout << "enter " << str;
+    std::cin >> str;
+    return str;
+}
+void exist(bool& continuation){
+    system("cls");
+     std::cout << "Are you sure you want to exit?\n YES : y\n NO : n\n";
+    switch (getchar())
+    {
+        case 'y':
+        continuation = false;
+            system("cls");
+            return;
+        case 'n':
+            return;
+        default:
+            system("cls");
+            std::cout << "The desired command was not found\n";
+            exist(continuation);
+            break;
+    }    
+}
+
+bool split_detection(ContactsList& list2, std::string& order, std::map<std::string, ContactsList>& booklet, 
+    const std::string type){
+    auto index = order.find(type);
+    order.erase(index, 1);
+    while(true){
+        if(order[0] == ' '){
+            index = order.find(" ");
+            order.erase(index, type.size());
+        }
+        else  break;
+    }
+    auto itr = booklet.find(order);
+    if(itr != booklet.end()){
+        list2 = itr->second;
+        return true;
+    }
+    std::cout << "No contact list was found with this name \n";
+    return false;
+}
+
+void preformOperation(ContactsList& list1, std::string& order, std::map<std::string, ContactsList>& booklet, 
+    const std::string type){
+    ContactsList list2;
+    if(split_detection(list2, order, booklet, type)){
+        ContactsList temp;
+        if(type == "+") temp = list1 + list2;
+        else temp = list1 - list2;
+        std::cout << "Do you want to create a new contact list with this operator or just want to print it?"
+        <<"\n create : c\n print : p\n";
+        std::string name;
+        switch (getchar())
+        {
+            case 'c':
+                std::cout << "enter name of new contact list : ";
+                std::cin.ignore();
+                std::getline(std::cin, name);
+                booklet[name] = temp;
+                break;
+            case 'p':
+                (temp).print();
+                break;
+            default:
+                std::cout << "The desired command was not found\n";
+                break;
+        }
+    }
+}
+
+void getCommandForList(ContactsList& list, bool& continuation, std::map<std::string, ContactsList>& booklet)
+{
+    std::string order2;
+    std::cout << "Guide :\n";
+    std::cout << "Add a contact : ac  #  Delete a contact : dc  #  Edit a contact : ec  #  "
+    << "Search for a contact by name : sn\nSearch for a contact by email : se  #  "
+    <<"Search for a contact by phone : sp  #  Print contact list : pc\nBack to the main menu : bm"
+    <<"  #  Exist : ex  #  operator (+) : + \"list2\"  #   operator (-) : - \"list2\"\n"
+    <<"operator (=) : = \"list2\"  #  operator(==) : = \"list2\"  #  operator ([]) : [unsigned int]\n";
+    std::getline(std::cin, order2);
+    system("cls");
+    if(order2 == "ac"){
+        std::string name = get_str('n'), email = get_str('e'), phone = get_str('p'); 
+        list.addContact(name, email, phone);
+        getCommandForList(list, continuation, booklet);
+    }
+    else if(order2 == "dc"){
+        list.removeByName(get_str('n'));
+        getCommandForList(list, continuation, booklet);
+    }  
+    else if(order2 == "ec"){
+        std::string name = get_str('n'), email = get_str('e'), phone = get_str('p'); 
+        list.editContact(name, email, phone);
+        getCommandForList(list, continuation, booklet);
+    }
+    else if(order2 == "sn"){
+        ContactNode *temp;
+        ContactsList aim;
+        temp = list.searchByName(get_str('n'));
+        if(temp){
+            aim.addContact(temp->getName(), temp->getEmail(), temp->getPhone());
+            aim.print();
+        }
+        getCommandForList(list, continuation, booklet);
+    }
+    else if(order2 == "se"){
+        ContactNode *temp;
+        ContactsList aim;
+        temp = list.searchByEmail(get_str('e'));
+        if(temp){
+            aim.addContact(temp->getName(), temp->getEmail(), temp->getPhone());
+            aim.print();
+        }
+        getCommandForList(list, continuation, booklet);
+    }
+    else if(order2 == "sp"){
+        ContactNode *temp;
+        ContactsList aim;
+        temp = list.searchByPhone(get_str('p'));
+        if(temp){
+            aim.addContact(temp->getName(), temp->getEmail(), temp->getPhone());
+            aim.print();
+        }
+        getCommandForList(list, continuation, booklet);
+    }
+    else if(order2[0] == '+'){
+        preformOperation(list, order2, booklet, "+");
+        getCommandForList(list, continuation, booklet);
+    }  
+    else if(order2[0] == '-'){
+        preformOperation(list, order2, booklet, "-");
+        getCommandForList(list, continuation, booklet);
+    }
+    else if(order2[0] == '=' && order2[1] == '='){
+        ContactsList list2;
+        bool answer;
+        system("cls");
+        if(split_detection(list2, order2, booklet, "==")){
+            answer = list == list2;
+            if(answer) std::cout << "Yes, they are equal\n";
+            else std::cout << "No, they are not equal\n";
+        }
+        else std::cout << "No contact list was found with this name \n";
+        getCommandForList(list, continuation, booklet);
+    }
+    else if(order2[0] == '='){
+        ContactsList list2;
+        if(split_detection(list2, order2, booklet, "=")){
+            list = list2;
+        }
+        else std::cout << "No contact list was found with this name \n";
+        getCommandForList(list, continuation, booklet);
+    }
+    else if(order2[0] == '['){
+        ContactsList temp;
+        int index = (int)order2[1] - 49;
+        temp.addContact(list[index].getName(), list[index].getEmail(), list[index].getPhone());
+        temp.print();
+        getCommandForList(list, continuation, booklet);
+    }
+    else if(order2 == "pc"){
+        list.print();
+        getCommandForList(list, continuation, booklet);
+    }
+    else if(order2 == "bm")
+        return;
+    else if(order2 == "ex"){
+        exist(continuation);
+        return ;
+    }
+    else{
+        std::cout << "The desired command was not found\n";
+        getCommandForList(list, continuation, booklet);
+    }
 }
